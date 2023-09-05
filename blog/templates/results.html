@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tracking Results</title>
+</head>
+<body>
+    <h1>Tracking Results</h1>
+    <table>
+        <tr>
+            <th>IP Address</th>
+            <th>URL</th>
+            <th>Time Spent (ms)</th>
+        </tr>
+        {% for item in data %}
+        <tr>
+            <td>{{ item.ip_address }}</td>
+            <td>{{ item.url }}</td>
+            <td>{{ item.time_spent }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

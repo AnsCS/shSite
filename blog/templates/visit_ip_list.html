@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Visit IP List</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>URL</th>
+                <th>Time Spent</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visit_ip in visit_ips %}
+                <tr>
+                    <td>{{ visit_ip.ip }}</td>
+                    <td><a href="{{ visit_ip.url }}">{{ visit_ip.url }}</a></td>
+                    <td>{{ visit_ip.time_spent|safe }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+<main>
+
+<div class="container mb-3">
+  <body class="bg-black text-white mt-0" data-bs-spy="scroll" data-bs-target="#navScroll" data-aos-easing="ease" data-aos-duration="800" data-aos-delay="0">
+    {% comment %} <div class="col-12 col-lg-10 col-xl-9"> {% endcomment %}
+
+    <div class="row">
+        <div class="col-md-4 order-0 order-md-1">
+            <h3>Tags</h3>
+            <ul>
+                {% for tag in tags %}
+                <li><a href="{% slugurl 'tags' %}?tag={{ tag }}">{{ tag }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-md-8">
+            {{ page.intro|richtext }}
+            <div class="row gx-5 ">
+                {% for blog in blogpages %}
+                <div class="col-md-6">
+                    <div class="card bg-transparent aos-init aos-animate" data-aos="zoom-in-up">
+                        <div class="bg-dark shadow rounded-5 p-0">
+                            {% with blog.specific.featured_image as featured_image %}
+                                {% if featured_image %}
+                                    {% image featured_image fill-700x394 as img %}
+                                    <a href="{% pageurl blog %}">
+                                        <img src="{{ img.url }}" alt="{{ blog.title }}" class="img-fluid rounded-5 no-bottom-radius" loading="lazy">
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
+                            <div class="p-5">
+                                <h2 class="fw-lighter">{{ blog.title }}</h2>
+                                <time class="small mb-3">{{ blog.date }}</time>
+                                <div class="card-description">
+                                    <p class="text-secondary">{{ blog.intro }}</p>
+                                </div>
+                                {% with categories=blog.categories.all %}
+                                    {% if categories %}
+                                        <ul>
+                                            {% for category in categories %}
+                                                <li style="display: inline">
+                                                    {% image category.icon fill-38x38 style="vertical-align: middle; border-radius: 50%;" %}
+                                                    {{ category.name }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endwith %}
+                                <a href="{% pageurl blog %}" class="link-fancy link-fancy-light">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</div>
+</div>
+</body>
+</main>
+{% endblock content %}

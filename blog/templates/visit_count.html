@@ -1,0 +1,52 @@
+{% comment %} <p>عدد زيارات الموقع: {{ visit_count }}</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>عدد زيارات الموقع</title>
+    <style>
+        .visits {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .visits div {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>عدد زيارات الموقع</h1>
+    <div class="visits">
+        <div>
+            <h2>الزيارات اليومية</h2>
+            <p>{{ daily_visits }}</p>
+        </div>
+        <div>
+            <h2>الزيارات الأسبوعية</h2>
+            <p>{{ weekly_visits }}</p>
+        </div>
+        <div>
+            <h2>الزيارات الشهرية</h2>
+            <p>{{ monthly_visits }}</p>
+        </div>
+    </div>
+</body>
+</html> {% endcomment %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>عدد زيارات الموقع</title>
+</head>
+<body>
+    <h1>عدد زيارات الموقع</h1>
+    <h2>الزيارات حسب البلد</h2>
+    <ul>
+        {% for visit in visits %}
+            <li>{{ visit.country }}: {{ visit.count }}</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

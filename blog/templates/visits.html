@@ -1,0 +1,13 @@
+<h1>Visits</h1>
+<ul>
+    {% for visit in visits %}
+        <li>
+            Visit from {{ visit.ip_address }} at {{ visit.start_time }}
+            <ul>
+                {% for pageview in visit.pageview_set.all %}
+                    <li>Visited {{ pageview.url }} for {{ pageview.time_on_page.total_seconds }} seconds</li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>

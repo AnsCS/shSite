@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "sh",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

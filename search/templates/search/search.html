@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailsearchpromotions_tags %}
+
+{% block body_class %}template-searchresults{% endblock %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Search</h1>
+
+    <form action="{% url 'search' %}" method="get" class="d-flex">
+        <input type="text" name="query" class="form-control me-2"{% if search_query %} value="{{ search_query }}"{% endif %}>
+        <input type="submit" value="Search" class="btn btn-primary">
+    </form>
+
+    {% get_search_promotions search_query as search_promotions %}
+    {% if search_promotions %}
+    <h2 class="mt-4">Promoted Results</h2>
+    <ul class="list-group mt-4">
+        {% for search_promotion in search_promotions %}
+        <li class="list-group-item">
+            <h4><a href="{% pageurl search_promotion.page %}">{{ search_promotion.page }}</a></h4>
+            {% if search_promotion.description %}
+            {{ search_promotion.description }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if search_results %}
+    <ul class="list-group mt-4">
+        {% for result in search_results %}
+        <li class="list-group-item">
+            <h2><a href="{% pageurl result %}">{{ result }}</a></h2>
+            {% if result.search_description %}
+            {{ result.search_description }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if search_results.has_previous %}
+            <li class="page-item"><a href="{% url 'search' %}?query={{ search_query|urlencode }}&page={{ search_results.previous_page_number }}" class="page-link">Previous</a></li>
+            {% endif %}
+
+            {% if search_results.has_next %}
+            <li class="page-item"><a href="{% url 'search' %}?query={{ search_query|urlencode }}&page={{ search_results.next_page_number }}" class="page-link">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% elif secondary_results %}
+    <h2 class="mt-4">Similar Pages</h2>
+    <ul class="list-group mt-4">
+        {% for result in secondary_results %}
+        <li class="list-group-item">
+            <h4><a href="{% pageurl result %}">{{ result }}</a></h4>
+            {% if result.search_description %}
+            {{ result.search_description }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% elif search_query %}
+    <p class="text-muted mt-4">No results found</p>
+    {% endif %}
+</div>
+{% endblock %}

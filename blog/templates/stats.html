@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+  <div class="row mt-5">
+    <div class="col-md-6 col-sm-5">
+      <h1 class="mb-5">Dashbord</h1>
+      <form method="GET" action="{% url 'stats' %}" class="form-inline">
+        <div class="form-group mb-2">
+          <label for="year" class="mr-2">اختر سنة:</label>
+          <select name="year" id="year" class="form-control">
+            {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group mb-2">
+          <label for="month" class="mr-2">اختر شهر:</label>
+          <select name="month" id="month" class="form-control">
+            <option value="1">يناير</option>
+            <option value="2">فبراير</option>
+            <option value="3">مارس</option>
+            <option value="4">أبريل</option>
+            <option value="5">مايو</option>
+            <option value="6">يونيو</option>
+            <option value="7">يوليو</option>
+            <option value="8">أغسطس</option>
+            <option value="9">سبتمبر</option>
+            <option value="10">أكتوبر</option>
+            <option value="11">نوفمبر</option>
+            <option value="12">ديسمبر</option>
+          </select>
+        </div>
+        <input type="submit" value="عرض الإحصائيات" class="btn btn-primary mb-5 ml-2">
+      </form>
+      {% if monthly_visits %}
+      <h2 class="mt-3 mb-3">Number of visits for each day in {{ monthly_visits.0.date|date:"F" }}</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">number of visits</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for visit in monthly_visits %}
+          <tr>
+            <td>{{ visit.date }}</td>
+            <td>{{ visit.visits }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+
+    <div class="col-md-6 col-sm-4 mb-3 mt-3">
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+          {% endfor %}
+      </ul>
+      {% endif %}
+
+      <canvas id="myChart"></canvas>
+      <canvas id="countryChart"></canvas>
+      <canvas id="countryBarChart"></canvas>
+
+
+
+
+      {% if country_visits %}
+      <h2 class="mt-3">The number of visits per country in {{ monthly_visits.0.date|date:"F" }}</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Country</th>
+            <th scope="col">number of visits</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for visit in country_visits %}
+          <tr>
+            <td>{{ visit.country }}</td>
+            <td>{{ visit.visits }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      {% if hourly_visits %}
+      <h2 class="mt-3 mb-3">The number of visits per hour in {{ monthly_visits.0.date|date:"F" }}</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Hour</th>
+            <th scope="col">AM/PM</th>
+            <th scope="col">number of visits</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for visit in hourly_visits %}
+          <tr>
+            <td>{{ visit.hour_12 }}</td>
+            <td>{{ visit.period }}</td>
+            <td>{{ visit.visits }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+
+      {% if blog_views %}
+<h2 class="mt-3">The number of views and comments for each blog page</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col">View count</th>
+      <th scope="col">Comment count</th>
+      <th scope="col">Link</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for blog in blog_views %}
+    <tr>
+      <td>{{ blog.title }}</td>
+      <td>{{ blog.view_count }}</td>
+      <td>{{ blog.comment_count }}</td>
+      <td><a href="{{ blog.url }}" target="_blank">{{ blog.url|urlize }}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+    </div>
+  </div>
+<script>
+  // إعداد بيانات الرسم البياني
+  const labels = {{ chart_labels| safe }};
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'visits for today',
+      data: {{ chart_data| safe }},
+  fill: false,
+    borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
+  };
+
+  // إنشاء الرسم البياني
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const myChart = new Chart(ctx, {
+    type: 'line',
+    data: data,
+    options: {}
+  });
+</script>
+
+
+<script>
+  // إعداد بيانات الرسم البياني
+  const countryData = {
+    labels: {{ country_labels | safe }},
+    datasets: [{
+      label: 'Country visits',
+      data: {{ country_data | safe }},
+      backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 205, 86)',
+        'rgb(75, 192, 192)',
+        'rgb(153, 102, 255)',
+        'rgb(201, 203, 207)'
+      ],
+      hoverOffset: 4
+    }]
+  };
+
+  // إنشاء الرسم البياني
+  const countryCtx = document.getElementById('countryChart').getContext('2d');
+  const countryChart = new Chart(countryCtx, {
+    type: 'doughnut',
+    data: countryData,
+    options: {}
+  });
+</script>
+
+
+<script>
+  // إعداد بيانات الرسم البياني
+  const countryBarData = {
+    labels: {{ country_labels | safe }},
+    datasets: [{
+      label: 'Country visits',
+      data: {{ country_data | safe }},
+      backgroundColor: 'rgb(54, 162, 235)',
+      borderColor: 'rgb(54, 162, 235)',
+    }]
+  };
+
+  // إنشاء الرسم البياني
+  const countryBarCtx = document.getElementById('countryBarChart').getContext('2d');
+  const countryBarChart = new Chart(countryBarCtx, {
+    type: 'bar',
+    data: countryBarData,
+    options: {}
+  });
+</script>
+
+
+{% endblock %}
+
+
+
+{% comment %} {% if month and year %}
+<div class="col-md-6">
+  {% if country_visits %}
+  <h2>عدد الزيارات لكل دولة في {{ monthly_visits.0.date|date:"F" }}</h2>
+  <ul class="list-group">
+    {% for visit in country_visits %}
+    <li class="list-group-item">{{ visit.country }}: {{ visit.visits }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endif %} {% endcomment %}

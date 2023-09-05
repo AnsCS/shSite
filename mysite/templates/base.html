@@ -1,0 +1,320 @@
+{% load static wagtailcore_tags wagtailuserbar menus_tags  %}
+
+{% get_menu "navbar" as navigation %}
+
+{% get_menu "footer" as footer %}
+
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    {% block meta_tag %}
+        <title>
+            {% block title %}
+                {% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}
+            {% endblock %}
+            {% block title_suffix %}
+                {% wagtail_site as current_site %}
+                {% if current_site and current_site.site_name %}- {{ current_site.site_name }}{% endif %}
+            {% endblock %}
+        </title>
+        {% if page.search_description %}
+            <meta name="description" content="{{ page.search_description }}"/>
+            <meta name="images" content="{{ page.search_image }}"/>
+        {% endif %}
+    {% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    {# Force all links in the live preview panel to be opened in a new tab #}
+    {% if request.in_preview_panel %}
+        <base target="_blank">
+    {% endif %}
+
+    {# Global stylesheets #}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" >
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mysite.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/shadow.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/theme.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-element-bundle.min.js"></script> {% endcomment %}
+
+    {% comment %} <link rel="stylesheet" href="{% static 'css/content-styles.css' %}" type="text/css"> {% endcomment %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Add the highlight.js library from CDN -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/shades-of-purple.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% comment %} <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New&display=swap" rel="stylesheet"> {% endcomment %}
+
+
+    <!-- import font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+
+    <!-- apply font to all texts -->
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+    </style>
+
+
+
+
+    <script src="
+    https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js
+    "></script>
+    <link href="
+    https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css
+    " rel="stylesheet">
+    {% block extra_css %}
+        {# Override this in templates to add extra stylesheets #}
+        {{ block.super }}
+        <link href="{% static 'wagtailsurveyjs/css/vendor/defaultV2.min.css' %}" type="text/css" rel="stylesheet">
+
+    {% endblock %}
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- قم بتضمين ملفات CSS و JavaScript الخاصة بمكتبة AOS -->
+        <link href="https://cdn.jsdelivr.net/npm/aos@2/dist/aos.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/aos@2/dist/aos.js"></script>
+
+        {% comment %} <script   src="{% static 'js/timeme.min.js' %}"></script> {% endcomment %}
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MJ4R6MX0WD"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-MJ4R6MX0WD');
+        </script>
+
+</head>
+
+{% comment %} <script async src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3"></script> {% endcomment %}
+{% comment %} <body id="#top" class="d-flex flex-column h-100 {% block body_class %}{% endblock %} "> {% endcomment %}
+
+<body id='#top' class="bg-black text-white mt-0  {% block body_class %}{% endblock %} " >
+    {% comment %} <body class="bg-black text-white mt-0" data-bs-spy="scroll" data-bs-target="#navScroll"> {% endcomment %}
+
+{% wagtailuserbar %}
+
+<nav id="navScroll" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top px-vw-5" tabindex="0">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="true" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarScroll">
+            <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                {% for item in navigation.menu_items.all %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if item.title == 'Home' %}active{% endif %}" href="{{ item.link }}" {% if item.open_in_new_tab %}target="_blank"{% endif %}>{{ item.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <form action="{% url 'search' %}" method="get" class="d-flex">
+                <input class="form-control me-2" type="text" name="query" placeholder="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+{% comment %} <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarScroll">
+            <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                {% for item in navigation.menu_items.all %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if item.title == 'Home' %}active{% endif %}" href="{{ item.link }}" {% if item.open_in_new_tab %}target="_blank"{% endif %}>{{ item.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <ul class="navbar-nav my-2 my-lg-0 navbar-nav-scroll">
+                <li class="nav-item dropdown bg-withe">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Theme <i class="bi bi-moon theme-icon dark-theme-icon"></i><i class="bi bi-sun theme-icon light-theme-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                        <li><a class="dropdown-item" href="#" data-bs-theme-value="light">Light</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-theme-value="dark">Dark</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-theme-value="auto">Auto</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form action="{% url 'search' %}" method="get" class="d-flex">
+                <input class="form-control me-2" type="text" name="query" placeholder="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav> {% endcomment %}
+
+{% comment %} <nav id="navScroll" class="navbar navbar-dark bg-black fixed-top px-vw-5" tabindex="0">
+    <div class="container">
+      <a class="navbar-brand pe-md-4 fs-4 col-12 col-md-auto text-center" href="index.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-stack" viewBox="0 0 16 16">
+          <style type="text/css">
+              .st0{fill:#FF00FF;}
+          </style>
+          <path class="st0" d="M4.32,9.51c0.23,0.72,0.52,1.41,0.88,2.06h0c0.36,0.68,0.79,1.32,1.27,1.92c0.48,0.6,1.03,1.16,1.61,1.65h0
+              c0.56,0.48,1.17,0.91,1.81,1.28c0.64-0.37,1.25-0.8,1.81-1.28c0.59-0.5,1.13-1.05,1.62-1.65c0.48-0.6,0.91-1.24,1.27-1.92
+              c0.35-0.66,0.65-1.35,0.88-2.06c-0.3-0.01-0.59-0.04-0.88-0.07c-0.36,0.68-0.79,1.32-1.27,1.92c-0.49,0.6-1.03,1.16-1.62,1.65
+              c-0.56,0.48-1.17,0.91-1.81,1.28c-0.64-0.37-1.25-0.8-1.81-1.28h0c-0.59-0.5-1.13-1.05-1.61-1.65c-0.48-0.6-0.91-1.24-1.27-1.92
+              C4.91,9.47,4.62,9.49,4.32,9.51z"/>
+          <path class="st0" d="M19.43,17.76c0-0.86-0.06-1.7-0.17-2.52c-0.15-1.13-0.4-2.23-0.74-3.29c-0.35-1.11-0.81-2.18-1.36-3.19
+              c-0.56-1.05-1.22-2.05-1.97-2.97c-0.75-0.93-1.59-1.79-2.5-2.55c-0.87-0.74-1.81-1.4-2.8-1.98C8.91,1.83,7.97,2.5,7.1,3.24
+              C6.19,4.01,5.35,4.86,4.6,5.79C3.86,6.71,3.2,7.71,2.63,8.76c-0.55,1.01-1,2.08-1.36,3.19c-0.34,1.06-0.59,2.16-0.74,3.29
+              c-0.11,0.82-0.17,1.67-0.17,2.52c0,0.26,0.01,0.52,0.02,0.78c0.05,0,0.1,0,0.15,0c0.15-1.13,0.4-2.23,0.74-3.29
+              c0.35-1.11,0.81-2.18,1.36-3.19C3.2,11.01,3.86,10.02,4.6,9.1c0.75-0.93,1.59-1.79,2.5-2.55c0.87-0.74,1.81-1.4,2.8-1.98
+              c0.99,0.57,1.93,1.23,2.8,1.98c0.91,0.77,1.75,1.62,2.5,2.55c0.75,0.92,1.41,1.91,1.97,2.97c0.55,1.01,1,2.08,1.36,3.19
+              c0.34,1.06,0.59,2.16,0.74,3.29c0.05,0,0.1,0,0.15,0C19.42,18.28,19.43,18.02,19.43,17.76z"/>
+          </svg>
+        <span class="ms-md-1 mt-1 fw-bolder me-md-5">أنجز</span>
+      </a>
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 list-group list-group-horizontal">
+        {% for item in navigation.menu_items.all %}
+                <li class="nav-item">
+                    <a class="nav-link fs-5 {% if item.title == 'Home' %}active{% endif %}" href="{{ item.link }}" {% if item.open_in_new_tab %}target="_blank"{% endif %}>{{ item.title }}</a>
+                </li>
+        {% endfor %}
+      </ul>
+    </div>
+</nav> {% endcomment %}
+{% comment %} <main>
+
+<div class="container mb-3"> {% endcomment %}
+
+        <script>
+            AOS.init();
+        </script>
+    {% block content %}{% endblock %}
+{% comment %} </div>
+</main> {% endcomment %}
+
+{% comment %} Your page content here {% endcomment %}
+<footer class="bg-black border-top border-dark">
+    <div class="container py-vh-4 text-secondary fw-lighter">
+        {% comment %} <footer class="py-3 my-4"> {% endcomment %}
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+            <li class="nav-item">{% for item in footer.menu_items.all %}
+                <a class="nav flex-row nav-link link-fancy link-fancy-light" href="{{ item.link }}"
+                        {% if item.open_in_new_tab %}
+                   target="_blank"{% endif %}>{{ item.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="d-flex flex-wrap justify-content-center mb-3">
+            {% if settings.site_settings.SocialMediaSettings.facebook %}
+                <a href="{{ settings.site_settings.SocialMediaSettings.facebook }}" class="mx-2 btn-flat" title="facebook">
+                    <i class="fab fa-facebook-f fa-2x text-white"></i>
+                </a>
+
+
+            {% endif %}
+            {% if settings.site_settings.SocialMediaSettings.twitter %}
+                <a href="{{ settings.site_settings.SocialMediaSettings.twitter }}" class="mx-2 btn-flat" title="twitter">
+                    <i class="fab fa-twitter fa-2x text-white"></i>
+                </a>
+            {% endif %}
+            {% if settings.site_settings.SocialMediaSettings.instagram %}
+                <a href="{{ settings.site_settings.SocialMediaSettings.instagram }}" class="mx-2 btn-flat" title="instagram">
+                    <i class="fab fa-instagram fa-2x text-white"></i>
+                </a>
+            {% endif %}
+            {% if settings.site_settings.SocialMediaSettings.telegram %}
+                <a href="{{ settings.site_settings.SocialMediaSettings.telegram }}" class="mx-2 btn-flat" title="telegram">
+                    <i class="fab fa-telegram fa-2x text-white"></i>
+                </a>
+            {% endif %}
+            {% if settings.site_settings.SocialMediaSettings.youtube %}
+                <a href="{{ settings.site_settings.SocialMediaSettings.youtube }}" class="mx-2 btn-flat" title="youtube">
+                    <i class="fab fa-youtube fa-2x text-white"></i>
+                </a>
+            {% endif %}
+        </div>
+        <p class="text-center text-muted">© 2022 Company, Inc</p>
+    </div>
+</footer>
+
+{% comment %} <a href="#top" class="btn btn-primary position-fixed bottom-0 end-0 m-3">
+    <i class="bi bi-arrow-up-square-fill text-white"></i>
+</a>
+<div class="col-lg-12 text-center">
+    {% if settings.site_settings.SocialMediaSettings.facebook %}
+        <a href="{{ settings.site_settings.SocialMediaSettings.facebook }}" class="mx-2">
+            <i class="fab fa-facebook-f fa-2x"></i>
+        </a>
+    {% endif %}
+    {% if settings.site_settings.SocialMediaSettings.twitter %}
+        <a href="{{ settings.site_settings.SocialMediaSettings.twitter }}" class="mx-2">
+            <i class="fab fa-twitter fa-2x"></i>
+        </a>
+    {% endif %}
+    {% if settings.site_settings.SocialMediaSettings.instagram %}
+        <a href="{{ settings.site_settings.SocialMediaSettings.instagram }}" class="mx-2">
+            <i class="fab fa-instagram fa-2x"></i>
+        </a>
+    {% endif %}
+    {% if settings.site_settings.SocialMediaSettings.telegram %}
+        <a href="{{ settings.site_settings.SocialMediaSettings.telegram }}" class="mx-2">
+            <i class="fab fa-telegram fa-2x"></i>
+        </a>
+    {% endif %}
+    {% if settings.site_settings.SocialMediaSettings.youtube %}
+        <a href="{{ settings.site_settings.SocialMediaSettings.youtube }}" class="mx-2">
+            <i class="fab fa-youtube fa-2x"></i>
+        </a>
+    {% endif %}
+</div> {% endcomment %}
+
+{% comment %} Your page content here {% endcomment %}
+{% comment %} <div class="container-fluid mt-auto" style="background-color: #212529">
+    <footer class="py-3 my-4">
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+            <li class="nav-item">{% for item in footer.menu_items.all %}
+                <a class="nav-link  px-2 text-muted" href="{{ item.link }}"
+                        {% if item.open_in_new_tab %}
+                   target="_blank"{% endif %}>{{ item.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <p class="text-center text-muted">© 2022 Company, Inc</p>
+    </footer>
+</div> {% endcomment %}
+
+{# Global javascript #}
+<script src="{% static 'js/mysite.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+<script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+{% block extra_js %}
+    {# Override this in templates to add extra javascript #}
+    {{ block.super }}
+<script src="{% static 'wagtailsurveyjs/js/vendor/jquery.min.js' %}"></script>
+<script src="{% static 'wagtailsurveyjs/js/vendor/survey.jquery.js' %}"></script>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/aos.js' %}"></script>
+
+
+
+{% include "wagtailsurveyjs/survey_form_page_js_include.html" %}
+{% endblock %}
+</body>
+</html>

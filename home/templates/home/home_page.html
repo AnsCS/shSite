@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags wagtailmetadata_tags %}
+{% load static %}
+{% load wagtailuserbar %}
+{% block body_class %}template-homepage{% endblock %}
+
+
+{% block content %}
+
+
+
+{% comment %} <div class="container mb-3"> {% endcomment %}
+{% comment %} <body class="bg-black text-white mt-0" data-bs-spy="scroll" data-bs-target="#navScroll" data-aos-easing="ease" data-aos-duration="800" data-aos-delay="0"> {% endcomment %}
+
+    <main>
+    <div class="w-100 overflow-hidden position-relative bg-black text-white aos-init aos-animate" data-aos="fade">
+        <div class="position-absolute w-100 h-100 bg-black opacity-75 top-0 start-0"></div>
+        <div class="container py-vh-4 position-relative mt-5 px-vw-5 text-center">
+            <div class="row d-flex align-items-center justify-content-center py-vh-5">
+                <div class="col-12 col-xl-10">
+                    {% for block in page.body %}
+                        {% if block.block_type == 'Topic' %}
+                            <span class="h5 text-secondary fw-lighter">{{ block.value.title }}</span>
+                            <h1 class="display-huge mt-3 mb-3 lh-1">{{ block.value.subtitle }}</h1>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="col-12 col-xl-8">
+                    {% for block in page.body %}
+                        {% if block.block_type == 'Topic' %}
+                            <p class="lead text-secondary">{{ block.value.description|safe }}</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="w-100 position-relative bg-black text-white bg-cover d-flex align-items-center">
+        <div class="container-fluid px-vw-5">
+            <div class="position-absolute w-100 h-50 bg-dark bottom-0 start-0"></div>
+            {% for block in page.body %}
+                {% if block.block_type == 'Images' %}
+                    <div class="row d-flex align-items-center position-relative justify-content-center px-0 g-5">
+                        <div class="col-12 col-lg-6">
+                            {% image block.value.image_1 width-2280 height-1732 class="img-fluid position-relative rounded-5 shadow aos-init aos-animate" data-aos="fade-up" alt="abstract image" %}
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3">
+                            {% image block.value.image_2 width-1116 height-1578 class="img-fluid position-relative rounded-5 shadow aos-init aos-animate" data-aos="fade-up" data-aos-duration="2000" alt="abstract image" %}
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3">
+                            {% image block.value.image_3 width-1116 height-1578 class="img-fluid position-relative rounded-5 shadow aos-init aos-animate" data-aos="fade-up" data-aos-duration="2000" alt="abstract image" %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-dark">
+        <div class="container px-vw-5 py-vh-5">
+            <div class="row d-flex align-items-center">
+                <div class="col-12 col-lg-7 text-lg-end aos-init aos-animate" data-aos="fade-right">
+                    {% for block in page.body %}
+                        {% if block.block_type == 'WhatWeDo' %}
+                            <span class="h5 text-secondary fw-lighter">{{ block.value.heading }}</span>
+                            <h2 class="display-4">{{ block.value.subheading }}</h2>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="col-12 col-lg-5 aos-init aos-animate" data-aos="fade-left">
+                    {% for block in page.body %}
+                        {% if block.block_type == 'WhatWeDo' %}
+                            <h3 class="pt-5">{{ block.value.description1_title }}</h3>
+                            <p class="text-secondary">{{ block.value.description1_text|richtext }}</p>
+                            <a href="{{ block.value.description1_link_url }}" class="link-fancy link-fancy-light me-2">{{ block.value.description1_link_text }}</a>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                            </svg>
+
+                            <h3 class="border-top border-secondary pt-5 mt-5">{{ block.value.description2_title }}</h3>
+                            <p class="text-secondary">{{ block.value.description2_text|richtext }}</p>
+                            <a href="{{ block.value.description2_link_url }}" class="link-fancy link-fancy-light me-2">{{ block.value.description2_link_text }}</a>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                            </svg>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    {% comment %}       <div class="col-12 col-md-6">
+                    {% for block in page.body %}
+                        {% if block.block_type == 'HeadingWithSubheading' %}
+                            <div class="p-5 pt-0 mt-5 aos-init aos-animate" data-aos="fade">
+                                <span class="h5 text-secondary fw-lighter">{{ block.value.heading }}</span>
+                                <h2 class="display-4">{{ block.value.subheading }}</h2>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div> {% endcomment %}
+
+                {% comment %} <div class="bg-black py-vh-3">
+                    <div class="container bg-black px-vw-5 py-vh-3 rounded-5 shadow">
+                        <div class="row gx-5">
+                            <div class="col-12 col-md-6 text-end">
+                                {% for block in page.body %}
+                                    {% if block.block_type == 'RightCard' %}
+                                        <div class="card bg-transparent mb-5" data-aos="zoom-in-up">
+                                            <div class="bg-dark shadow rounded-5 p-0">
+                                                {% image block.value.image fill-582x327 class="img-fluid rounded-5 no-bottom-radius" loading="lazy" %}
+                                                <div class="p-5">
+                                                    <h2 class="fw-lighter">{{ block.value.title }}</h2>
+                                                    <p class="pb-4 text-secondary">{{ block.value.text|richtext }}</p>
+                                                    <a href="#" class="link-fancy link-fancy-light">Read more</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="col-12 col-md-6 text-start">
+                                {% for block in page.body %}
+                                    {% if block.block_type == 'LeftCard' %}
+                                        <div class="card bg-transparent mb-5 mt-5" data-aos="zoom-in-up">
+                                            <div class="bg-dark shadow rounded-5 p-0">
+                                                {% image block.value.image fill-582x390 class="img-fluid rounded-5 no-bottom-radius" loading="lazy" %}
+                                                <div class="p-5">
+                                                    <h2 class="fw-lighter">{{ block.value.title }}</h2>
+                                                    <p class="pb-4 text-secondary">{{ block.value.text|richtext }}</p>
+                                                    <a href="#" class="link-fancy link-fancy-light">Read more</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                <div class="bg-black py-vh-3">
+                    <div class="container bg-black px-vw-5 py-vh-3 rounded-5 shadow">
+                        <div class="row gx-5">
+                            <div class="col-12 col-md-6 text-end">
+                                {% for block in page.body %}
+                                    {% if block.block_type == 'RightCard' %}
+                                        <div class="card bg-transparent mb-5" data-aos="zoom-in-up">
+                                            <div class="bg-dark shadow rounded-5 p-0">
+                                                {% image block.value.image fill-582x327 class="img-fluid rounded-5 no-bottom-radius" loading="lazy" %}
+                                                <div class="p-5">
+                                                    <h2 class="fw-lighter">{{ block.value.title }}</h2>
+                                                    <p class="pb-4 text-secondary">{{ block.value.text|richtext }}</p>
+                                                    <a href="{{ block.value.link_url }}" class="link-fancy link-fancy-light">{{ block.value.link_text }}</a>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="col-12 col-md-6 text-start">
+                                {% for block in page.body %}
+                                    {% if block.block_type == 'LeftCard' %}
+                                        <div class="card bg-transparent mb-5 mt-5" data-aos="zoom-in-up">
+                                            <div class="bg-dark shadow rounded-5 p-0">
+                                                {% image block.value.image fill-582x390 class="img-fluid rounded-5 no-bottom-radius" loading="lazy" %}
+                                                <div class="p-5">
+                                                    <h2 class="fw-lighter">{{ block.value.title }}</h2>
+                                                    <p class="pb-4 text-secondary">{{ block.value.text|richtext }}</p>
+                                                    <a href="{{ block.value.link_url }}" class="link-fancy link-fancy-light">{{ block.value.link_text }}</a>
+
+                                                    {% comment %} <a href="#" class="link-fancy link-fancy-light">Read more</a> {% endcomment %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% elif block.block_type == 'HeadingWithSubheading' %}
+                                        <div class="p-5 pt-0 mt-5" data-aos="fade">
+                                            <span class="h5 text-secondary fw-lighter">{{ block.value.heading }}</span>
+                                            <h2 class="display-4">{{ block.value.subheading }}</h2>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="services" class="cards-1 bg-gray">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <div class="text-container">
+                                    {% for block in page.body %}
+                                        {% if block.block_type == 'service_section' %}
+                                            <h2>{{ block.value.title }}</h2>
+                                            {{ block.value.description|richtext }}
+                                            <ul class="list-unstyled li-space-lg">
+                                                {% for point in block.value.points %}
+                                                    <li class="d-flex">
+                                                        <i class="fas fa-square"></i>
+                                                        <div class="flex-grow-1">{{ point|richtext }}</div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div> <!-- end of text-container -->
+                            </div> <!-- end of col -->
+                            <div class="col-lg-7">
+                                <div class="card-container">
+                                    {% for block in page.body %}
+                                        {% if block.block_type == 'service_list' %}
+                                            <!-- Card -->
+                                            <div class="card">
+                                                <div class="card-icon">
+                                                    {{ block.value.icon|safe }}
+                                                </div>
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{ block.value.icon_description }}</h5>
+                                                </div>
+                                            </div>
+                                            <!-- end of card -->
+                                        {% endif %}
+                                    {% endfor %}
+                                </div> <!-- end of container -->
+
+                            </div> <!-- end of col -->
+                        </div> <!-- end of row -->
+                    </div> <!-- end of container -->
+                </div>
+
+
+    </main>
+
+
+
+
+
+</div>
+{% comment %} </div> {% endcomment %}
+{% comment %} </body> {% endcomment %}
+
+{% endblock %}

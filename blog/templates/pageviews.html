@@ -1,0 +1,19 @@
+<h1>Pageviews</h1>
+<table>
+    <tr>
+        <th>Page Path</th>
+        <th>Total Visits</th>
+        <th>Unique Visits</th>
+        <th>% Returning Visitors</th>
+        <th>Avg. Time on Page</th>
+    </tr>
+    {% for page_path, stats in page_stats.items %}
+        <tr>
+            <td>{{ page_path }}</td>
+            <td>{{ stats.total }}</td>
+            <td>{{ stats.unique }}</td>
+            <td>{{ stats.returning|floatformat:2 }}%</td>
+            <td>{{ stats.avg_time_on_page|floatformat:2 }} seconds</td>
+        </tr>
+    {% endfor %}
+</table>

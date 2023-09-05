@@ -1,0 +1,536 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags wagtailmetadata_tags comments %}
+{% load static %}
+{% load wagtailuserbar %}
+{% block meta_tag %}
+{% meta_tags %}
+{% endblock %}
+{% block body_class %}template-blogpage{% endblock %}
+
+{% block content %}
+
+<div class="container mb-3">
+<div class="row d-flex justify-content-center py-vh-5 pb-0">
+{% comment %} <div class="p-3 mb-2 container my-5 style=" clear: both"> {% endcomment %}
+    <div class="col-12 col-lg-10 col-xl-9">
+    <div class="row">
+        {% comment %} {% image page.header_image original as header_image %}
+        <img src="{{ header_image.url }}" class="img-fluid"> {% endcomment %}
+        <h1>{{ page.title }}</h1>
+        <div class="intro mb-3">{{ page.intro }}</div>
+
+        {% with categories=page.categories.all %}
+        {% if categories %}
+        <ul>
+            {% for category in categories %}
+            <li style="display: inline">
+                {% image category.icon fill-56x56 style="vertical-align: middle; border-radius: 50%;" %}
+                {{ category.name }}
+            </li>
+            <div class="mt3">
+                <time class="text-muted small">
+                    {{ page.date }}
+                </time>
+              </div>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+        <br>
+        {% with tags=page.tags.all %}
+        {% if tags %}
+        <div class="mt-6 mb-4">
+            <h2>Tags:</h2>
+            <ul class="nav mt-2">
+                {% for tag in tags %}
+                <li><a class="btn btn-xs btn-outline-secondary m-1" href="{% slugurl 'tags' %}?tag={{ tag }}">{{ tag }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+        <br>
+
+        <br>
+        <div class="ck-content  img-fluid aos-init  " data-aos="fade-up " >
+            {{ page.body|safe }}
+        </div>
+
+        {% for block in blog.webstories %}
+        {% if block.block_type == 'local_story_embed' %}
+            {% include_block block %}
+        {% endif %}
+        {% endfor %}
+
+
+
+        {% comment %} <div class="row"> {% endcomment %}
+            {% for block in page.show_body %}
+            {% if block.block_type == 'heading' %}
+            <h2 class="{{ block.value.alignment }}">{{ block.value.text }}</h2>
+            {% comment %} custom_image in show_body - Blog Page class {% endcomment %}
+
+            {% elif block.block_type == 'image' %}
+            <div class="col-sm-5 col-md-6 col-lg-4 mb-3">
+                {% image block.value fill-696x764 class="img-fluid aos-init aos-animate" data-aos="fade-up" alt=block.value.caption|striptags %}
+            </div>
+            <br>
+
+            {% elif block.block_type == 'tables'%}
+            <div class="table-responsive">
+                {% include_block block %}
+            </div>
+
+            <br>
+
+            {% elif block.block_type == 'custom_image' %}
+            {% if block.value.image %}
+            <div class="col-sm-5 col-md-6 col-lg-4 mb-3">
+                <figure>
+                    {% image block.value.image fill-600x410 %}
+                    {% if block.value.caption %}
+                    <figcaption>{{ block.value.caption }}</figcaption>
+                    {% endif %}
+                </figure>
+            </div>
+            <br>
+            {% elif block.value.image_url %}
+            <div class="col-sm-5 col-md-6 col-lg-4 mb-3">
+                <figure>
+                    <img src="{{ block.value.image_url }}" alt="">
+                    {% if block.value.caption %}
+                    <figcaption>{{ block.value.caption }}</figcaption>
+                    {% endif %}
+                </figure>
+            </div>
+            {% endif %}
+
+            {% elif block.block_type == 'paragraph' %}
+            <p>{{ block.value }}</p>
+            <br>
+
+
+
+            {% elif block.block_type == 'aligned_text' %}
+            <div class="{{ block.value.alignment }}">
+                {{ block.value.text }}
+            </div>
+            <br>
+
+            {% elif block.block_type == 'code' %}
+            <div class="code-block notranslate mb-4">
+                {% if block.value.language %}
+                    {% comment %} <p>{{ block.value.language }}</p> {% endcomment %}
+                    <pre><code id="code-block" class="language-{{ block.value.language }}">{{ block.value.code }}</code></pre>
+                {% endif %}
+                <span id="copy-message" style="display: none;">تم النسخ</span>
+                <i class="fa-regular fa-clone copy-icon mb-2" onclick="copyCode()" title="نسخ"></i>
+            </div>
+
+            <br>
+
+            {% elif block.block_type == 'raw_html' %}
+            {{ block }}
+
+            {% elif block.block_type == 'blockquote' %}
+            <div class="ps-4 my-6 border-start border-500 border-2 fst-italic fw-normal gray-600 lead">
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>{{ block.value.text }}</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        {{ block.value.name }}
+                    </figcaption>
+                </figure>
+            </div>
+            <br>
+
+            {% elif block.block_type == 'video' %}
+            <div class="ratio ratio-16x9 mb-4">
+                <iframe src="{{ block.value.url }}" title="{{ block.value.title  }}" frameborder="0" allowfullscreen></iframe>
+            </div>
+
+            <br>
+
+            {% elif block.block_type == 'note' %}
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-circle"></i> {{ block.value.title }}
+                </h4>
+                <p class="mb-0">{{ block.value.description|safe }}</p>
+            </div>
+            <br>
+
+            {% elif block.block_type == 'recipe' %}
+            <h2>{{ block.value.title }}</h2>
+            <ul>
+                {% for ingredient in block.value.ingredients %}
+                <li>{{ ingredient.ingredient }}: {{ ingredient.amount }}</li>
+                {% endfor %}
+            </ul>
+            {{ block.value.instructions|richtext }}
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% comment %} {% for block in page.show_body %}
+        {% if block.block_type == 'note' %}
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-circle"></i> {{ block.value.title }}
+                </h4>
+                <p class="mb-0">{{ block.value.description|safe }}</p>
+            </div>
+        {% endif %}
+        {% endfor %} {% endcomment %}
+        <div class="cards">
+            <div class="container">
+                <div class="cards-content">
+                    {% for block in page.show_body %}
+                    {% if block.block_type == 'person' %}
+                    <div class='card'>
+                        <div class="splide" role="group" aria-label="Splide Basic HTML Example">
+                            <div class="splide__track">
+                                  <ul class="splide__list">
+                                    <li class="splide__slide">
+                                        <div class="card_swiper">
+                                            {% if block.value.pe_image %}
+                                            {% image block.value.pe_image fill-500x350 alt=block.value.caption|striptags %}
+                                            {% endif %}
+                                            <h2 style="color: {{ block.value.fullName_color }}">
+                                                <span>{{ block.value.name }}</span>
+                                            </h2>
+                                            <h5 style="color: {{ block.value.text_color }}">{{ block.value.biography }}</h5>
+                                        </div>
+                                    </li>
+                                    {% for description in block.value.description %}
+                                        <li class="splide__slide">
+                                            <div class="card_swiper">
+                                                <h2 style="color: {{ block.value.fullName_color }}">
+                                                </h2>
+                                                <h5 style="color: {{ block.value.text_color }}">{{ description.value }}</h5>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                  </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- Add this: -->
+        <div class="row" style=".row > div { margin: 0 5px;}">
+            {% for item in page.gallery_images.all %}
+            <div class="col-sm-5 col-md-6 col-lg-4 mb-3">
+                {% image item.image fill-320x240 %}
+                <p>{{ item.caption }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <br>
+        {% with related_posts=page.get_related_posts %}
+            {% if related_posts %}
+                <h2>Related Posts</h2>
+                <div class="row">
+                    {% for post in related_posts %}
+                        <div class="col-md-4">
+                            <div class="card mb-3 shadow">
+                                {% with post.specific.featured_image as featured_image %}
+                                    {% if featured_image %}
+                                        {% image featured_image fill-700x394 as img %}
+                                        <a href="{% pageurl post %}">
+                                            <img src="{{ img.url }}" alt="{{ post.title }}" class="card-img-top">
+                                        </a>
+                                    {% endif %}
+                                {% endwith %}
+                                <div class="card-body">
+                                    <h3 class="card-title"><a href="{% pageurl post %}">{{ post.title }}</a></h3>
+                                    <time class="text-muted small">
+                                        {{ page.date }}
+                                    </time>
+                                    {% comment %} <p class="card-text">{{ post.date }}</p> {% endcomment %}
+                                    <div class="card-description">
+                                        <p class="card-text small">{{ post.intro }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                                    {% comment %} </div> {% endcomment %}
+            {% endif %}
+        {% endwith %}
+
+        <h2>Leave a comment</h2>
+        <form id="comment-form" action="{% pageurl page %}" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" id="name" name="name" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" id="email" name="email" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="body" class="form-label">Comment:</label>
+                <textarea id="body" name="body" class="form-control " rows="10"></textarea>
+            </div>
+
+            {% comment %} Add the reCAPTCHA widget {% endcomment %}
+            <div class="g-recaptcha mb-3" data-sitekey="6LfOIdwmAAAAAO_XMaVSmoh_WJiLZ2PUpGzQIJuj"></div>
+            <div id="recaptcha-error" style="display:none;color:red;">Please complete the reCAPTCHA.</div>
+            <div id="validation-error" style="display:none;color:red;">Please fill in all the fields.</div>
+            <input type="submit" value="Submit" class="btn mb-2 btn-primary">
+        </form>
+
+        <br>
+
+        <h3>Comments</h3>
+        <div id="comments_section">
+            {% comment %} {% for comment in user_comments %}
+            <div class="comment">
+                <div class="card mb-3">
+                    <div class="card-body  fs-6">
+                        <h4 class="card-title mb-2 fs-5"> {{ comment.name }} </h4>
+                        <small class="text-muted comment-timestamp" data-timestamp="{{ comment.created_at.isoformat }}">{{ comment.created_at.isoformat }}</small>
+                <p>{{ comment.body }}</p>
+                <a href="{% url 'comment_edit' pk=comment.pk %}" class="btn btn-primary btn-sm mr-1 mb-1">
+                    Edit <span class="fas fa-edit ml-1" data-fa-transform="shrink-3"></span>
+                </a>
+                <form action="{% url 'comment_delete' pk=comment.pk %}" method="POST" class="d-inline-block">
+                    {% csrf_token %}
+                    <button class="btn btn-danger btn-sm mr-1 mb-1" type="submit">
+                        Delete <span class="fas fa-trash ml-1" data-fa-transform="shrink-3"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+            </div>
+        {% endfor %}
+        {% for comment in other_comments %}
+            <div class="comment">
+                <p>{{ comment.body }}</p>
+            </div>
+        {% endfor %} {% endcomment %}
+
+
+
+        </div>
+        <!-- Begin:add -->
+        <button id="more_comments_button" onclick="more_comments()" class="btn btn-outline-success ms-auto me-auto d-block mt-5" style="width: 10em;">more</button>
+        <!-- End:add -->
+
+    </div>
+{% comment %} </div> {% endcomment %}
+</div>
+</div>
+
+</div>
+</div>
+
+<script defer type="text/javascript">
+    const surveyPage = '7'
+    const surveySubmitUrl = ''
+    const surveyDataUploadUrl = ''
+    const surveyJsonStr = ''
+    let surveyJson = {}
+
+    let containerId = "survey-form-container"
+
+    if (typeof surveyContainerId !== 'undefined') {
+        containerId = surveyContainerId
+    }
+
+    if (surveyJsonStr) {
+        surveyJson = JSON.parse(surveyJsonStr);
+    }
+
+    $(function () {
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function saveSurveyData(path, payload) {
+            let props = {
+                method: "POST",
+                body: JSON.stringify(payload),
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                mode: "same-origin",
+            }
+
+            return fetch(path, props)
+                .then(response => {
+                    return response.json()
+                        .then(result => {
+                            return {
+                                ok: response.ok,
+                                body: result
+                            }
+                        });
+                })
+                .then(resultObj => {
+                    return resultObj;
+                })
+                .catch(error => {
+                    throw error;
+                });
+        }
+
+        const $surveyContainer = $(`#${containerId}`)
+
+        if ($surveyContainer.length) {
+            const survey = new Survey.Model(surveyJson);
+            $surveyContainer.Survey({model: survey});
+
+            survey.onUploadFiles.add(uploadFiles)
+            survey.onComplete.add(surveyComplete);
+        } else {
+            console.error(`Can not find Survey Container with id: '${containerId}' `)
+        }
+
+        function surveyComplete(sender) {
+            const payload = {form_data: sender.data, page: surveyPage}
+            saveSurveyData(surveySubmitUrl, payload)
+        }
+
+        function uploadFiles(_, options) {
+
+            const formData = new FormData();
+
+            options.files.forEach(function (file) {
+                formData.append(file.name, file);
+            });
+
+            let props = {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                mode: "same-origin",
+            }
+
+            fetch(surveyDataUploadUrl, props).then((response) => response.json())
+                .then((result) => {
+                    const {uploads} = result
+                    options.callback("success",
+                        options.files.map(function (file) {
+                            return {file: file, content: uploads[file.name]};
+                        })
+                    );
+                })
+                .catch((error) => {
+                    options.callback("error");
+                });
+        }
+    });
+
+    function add_comment(comment_data){
+        $('#comments_section').append('<div class="card mb-3">'+
+                '<div class="card-body fs-6">'+
+                    '<h4 class="card-title mb-2 fs-5">'+comment_data['name']+'</h4>'+
+                    '<small class="text-muted comment-timestamp" data-timestamp="'+comment_data['created_at']+'">'+comment_data['created_at']+'</small>'+
+                    '<p class="card-text mt-3 fs-6">'+comment_data['body']+'</p>'+
+                '</div>'+
+            '</div>');
+    }
+
+    // get comments
+    var all_comments = [];
+    var comments_count = 0;
+
+    function more_comments(){
+        for(let i1=0;i1<10;i1++){
+            try{
+                add_comment(all_comments[comments_count]);
+                comments_count++;
+            } catch(err) {
+                // remove more button
+                $("#more_comments_button").remove();
+                break;
+            }
+        }
+
+
+    }
+
+    $(document).ready(function() {
+      $.ajax({
+        url: '/api/comments/?format=json&slug={{ page.slug }}',
+        method: 'GET',
+        success: function(response) {
+          // Assuming the response is an array of comments
+          if(response.length == 0){
+                $("#comments_section").append('<div class="alert alert-info">لا يوجد تعليقات</div>');
+                $("#more_comments_button").remove();
+
+          } else {
+            for (var i = 0; i < response.length; i++) {
+                all_comments.push(response[i]);
+            }
+            more_comments();
+          }
+
+        },
+        error: function() {
+            $("#comments_section").append('<div class="alert alert-info">لا يوجد تعليقات</div>');
+            $("#more_comments_button").remove();
+        }
+      });
+    });
+
+    {% comment %} $(document).ready(function() {
+        $.ajax({
+          url: '/api/comments/?format=json&slug={{ page.slug }}',
+          method: 'GET',
+          success: function(response) {
+              // Assuming the response is an array of comments
+              if(response.length == 0){
+                  $("#comments_section").append('<div class="alert alert-info">لا يوجد تعليقات</div>');
+                  $("#more_comments_button").remove();
+              } else {
+                  for (var i = 0; i < response.length; i++) {
+                      var comment = response[i];
+                      var commentHtml = '<div class="comment">' +
+                          '<p>' + comment.body + '</p>';
+                      if (comment.session_key == '{{ request.session.session_key }}') {
+                          commentHtml += '<a href="/comment/' + comment.pk + '/edit/">Edit</a>' +
+                              '<a href="/comment/' + comment.pk + '/delete/">Delete</a>';
+                      }
+                      commentHtml += '</div>';
+                      $("#comments_section").append(commentHtml);
+                  }
+              }
+          }
+
+        });
+      }); {% endcomment %}
+
+
+
+</script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+{% endblock %}
+
+

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visits</title>
+</head>
+<body>
+    <h1>Visits</h1>
+    <table>
+        <tr>
+            <th>IP</th>
+            <th>URL</th>
+            <th>Time Spent</th>
+        </tr>
+        {% for visit in visits %}
+        <tr>
+            <td>{{ visit.ip }}</td>
+            <td>{{ visit.url }}</td>
+            <td>{{ visit.time_spent }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
