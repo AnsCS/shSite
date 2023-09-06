@@ -263,11 +263,13 @@ h5, .h5 {
 
 h6, .h6 {
   font-size: 1.2rem;
+  color: white;
 }
 
 p {
   margin-top: 0;
   margin-bottom: 1rem;
+  color: white;
 }
 
 abbr[title] {
@@ -8520,6 +8522,7 @@ textarea.form-control-lg {
 
 .fw-lighter {
   font-weight: lighter !important;
+  color: white;
 }
 
 .fw-light {
